@@ -91,7 +91,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 model.summary()
 
 # Step 12: Train the model
-epochs = 10  # Number of times the model sees the entire dataset
+epochs = 25  # Number of times the model sees the entire dataset
 history = model.fit(
     train_generator,
     steps_per_epoch=train_generator.samples // batch_size,

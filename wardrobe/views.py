@@ -68,6 +68,9 @@ def upload_image(request):
                 user_image.labels = predicted_label
                 user_image.save()
 
+                # Debug: Print the predicted label
+                print(f"Predicted Label: {predicted_label}")
+
             return redirect('image_result', image_id=user_image.id)
     else:
         form = ImageUploadForm()
@@ -141,24 +144,6 @@ def advanced_recommend_outfits(user_images):
                     recommendations.append((image, other_image))
 
     print(f"Total recommendations: {len(recommendations)}")  # Debug
-    return recommendations
-
-def advanced_recommend_outfits(user_images):
-    recommendations = []
-    for image in user_images:
-        # Extract labels
-        labels = image.labels.split(', ') if image.labels else []
-
-        for other_image in user_images:
-            if image.id != other_image.id:
-                other_labels = other_image.labels.split(', ') if other_image.labels else []
-
-                # Style Matching
-                if ('shirt' in labels and any(label in other_labels for label in ['pants', 'jeans', 'trousers'])) or \
-                   ('dress' in labels and any(label in other_labels for label in ['jacket', 'cardigan', 'coat'])) or \
-                   ('shoes' in labels and any(label in other_labels for label in ['dress', 'skirt', 'pants'])):
-                    recommendations.append((image, other_image))
-
     return recommendations
 
 def are_colors_complementary(color1, color2):
