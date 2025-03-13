@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Profile</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Welcome, {{ user.username }}!</h5>
+            <p class="card-text">Here are your profile details:</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                <li class="list-group-item"><strong>Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</li>
+            </ul>
+            <a href="{% url 'menu' %}" class="btn btn-primary mt-3">Back to Menu</a>
+        </div>
+    </div>
+
+    <h3 class="mt-5">Your Uploaded Images</h3>
+    <div class="row">
+        {% for image in user_images %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ image.image.url }}" class="card-img-top" alt="Uploaded Image">
+                    <div class="card-body">
+                        <p><strong>Labels:</strong> {{ image.labels }}</p>
+                        <p><strong>Colors:</strong> {{ image.colors }}</p>
+                        <a href="{% url 'image_result' image.id %}" class="btn btn-info btn-sm">View Analysis</a>
+                        <form action="{% url 'delete_image' image.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

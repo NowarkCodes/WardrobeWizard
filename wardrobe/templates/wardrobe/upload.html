@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Upload Images</h2>
+    <form method="post" enctype="multipart/form-data" id="upload-form">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    <!-- Image Preview Section -->
+    <div class="row mt-4" id="image-preview">
+        <!-- Preview images will be added here -->
+    </div>
+</div>
+
+<script>
+    // JavaScript to show image previews
+    document.getElementById('id_image').addEventListener('change', function(event) {
+        const previewContainer = document.getElementById('image-preview');
+        previewContainer.innerHTML = ''; // Clear previous previews
+
+        Array.from(event.target.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('img-fluid', 'col-md-3', 'mb-3');
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+{% endblock %}

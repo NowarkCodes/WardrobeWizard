@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Menu</h2>
+    <div class="list-group">
+        <a href="{% url 'upload' %}" class="list-group-item list-group-item-action">Upload Images</a>
+        <a href="{% url 'history' %}" class="list-group-item list-group-item-action">View History</a>
+        <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">Profile</a>
+    </div>
+</div>
+{% endblock %}
