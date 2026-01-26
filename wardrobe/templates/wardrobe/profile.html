@@ -3,37 +3,97 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Profile</h2>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Welcome, {{ user.username }}!</h5>
-            <p class="card-text">Here are your profile details:</p>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
-                <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
-                <li class="list-group-item"><strong>Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</li>
-            </ul>
-            <a href="{% url 'menu' %}" class="btn btn-primary mt-3">Back to Menu</a>
-        </div>
-    </div>
-
-    <h3 class="mt-5">Your Uploaded Images</h3>
+    
     <div class="row">
-        {% for image in user_images %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="{{ image.image.url }}" class="card-img-top" alt="Uploaded Image">
-                    <div class="card-body">
-                        <p><strong>Labels:</strong> {{ image.labels }}</p>
-                        <p><strong>Colors:</strong> {{ image.colors }}</p>
-                        <a href="{% url 'image_result' image.id %}" class="btn btn-info btn-sm">View Analysis</a>
-                        <form action="{% url 'delete_image' image.id %}" method="post" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ user.username }}</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Email:</strong> {{ user.email|default:"Not set" }}</li>
+                        <li class="list-group-item"><strong>Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Wardrobe Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Wardrobe Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            Total Items
+                            <span class="badge bg-primary rounded-pill">{{ total_items }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            Saved Outfits
+                            <span class="badge bg-success rounded-pill">{{ saved_outfits_count }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            Total Times Worn
+                            <span class="badge bg-info rounded-pill">{{ total_wears }}</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'wardrobe_stats' %}" class="btn btn-outline-primary btn-sm w-100">View Detailed Stats</a>
                     </div>
                 </div>
             </div>
-        {% endfor %}
+        </div>
+        
+        <div class="col-md-8">
+            <!-- Category Breakdown -->
+            {% if category_breakdown %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Category Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for cat in category_breakdown %}
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                    <span>{{ cat.category|default:"Other" }}</span>
+                                    <span class="badge bg-secondary">{{ cat.count }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Recent Items -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Your Wardrobe Items</h5>
+                    <a href="{% url 'history' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if user_images %}
+                        <div class="row">
+                            {% for image in user_images|slice:":12" %}
+                                <div class="col-md-3 col-4 mb-3">
+                                    <a href="{% url 'image_result' image.id %}">
+                                        <img src="{{ image.image.url }}" class="img-fluid rounded" alt="{{ image.category }}" style="height: 100px; width: 100%; object-fit: cover;">
+                                    </a>
+                                    <small class="d-block text-center text-muted">{{ image.category }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No items yet. <a href="{% url 'upload' %}">Upload your first item!</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Wardrobe Statistics</h2>
+    <p class="lead">Insights into your wardrobe</p>
+
+    <!-- Overview Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ total_items }}</h3>
+                    <p class="card-text">Total Items</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ total_wears }}</h3>
+                    <p class="card-text">Total Times Worn</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ never_worn|length }}</h3>
+                    <p class="card-text">Never Worn Items</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Category Breakdown -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Items by Category</h5>
+                </div>
+                <div class="card-body">
+                    {% if category_counts %}
+                        <ul class="list-group list-group-flush">
+                            {% for cat in category_counts %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ cat.category|default:"Uncategorized" }}
+                                    <span class="badge bg-primary rounded-pill">{{ cat.count }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No items in your wardrobe yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Most Worn Items -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Most Worn Items</h5>
+                </div>
+                <div class="card-body">
+                    {% if most_worn %}
+                        <div class="row">
+                            {% for item in most_worn %}
+                                <div class="col-4 mb-3">
+                                    <a href="{% url 'image_result' item.id %}">
+                                        <img src="{{ item.image.url }}" class="img-fluid rounded" alt="{{ item.category }}" style="height: 80px; width: 100%; object-fit: cover;">
+                                    </a>
+                                    <small class="d-block text-center">{{ item.category }}</small>
+                                    <small class="d-block text-center text-muted">{{ item.wear_count }}x worn</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Start wearing your items to see stats!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Never Worn Items -->
+    {% if never_worn %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Never Worn Items</h5>
+                    <small class="text-muted">Consider wearing these soon!</small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for item in never_worn %}
+                            <div class="col-md-2 col-4 mb-3">
+                                <a href="{% url 'image_result' item.id %}">
+                                    <img src="{{ item.image.url }}" class="img-fluid rounded" alt="{{ item.category }}" style="height: 100px; width: 100%; object-fit: cover;">
+                                </a>
+                                <small class="d-block text-center">{{ item.category }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
