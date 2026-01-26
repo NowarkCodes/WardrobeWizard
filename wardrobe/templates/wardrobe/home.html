@@ -1,9 +1,79 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container text-center mt-5">
-    <h1 class="display-4">Welcome to Wardrobe Wizard!</h1>
-    <p class="lead">Upload your clothes and get outfit suggestions.</p>
-    <a href="{% url 'menu' %}" class="btn btn-primary">Go to Menu</a>
+<div class="container">
+    <!-- Hero Section -->
+    <div class="text-center py-5">
+        <h1 class="display-4 fw-bold">Welcome to Wardrobe Wizard!</h1>
+        <p class="lead fs-4 text-muted">
+            Your intelligent digital closet that understands what you own and helps you make better styling decisions.
+        </p>
+        <div class="mt-4">
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-2">Get Started</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">Login</a>
+        </div>
+    </div>
+
+    <!-- Feature Highlights -->
+    <div class="row py-5">
+        <div class="col-12 text-center mb-4">
+            <h2>How It Works</h2>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 text-primary mb-3">📸</div>
+                    <h5 class="card-title">Upload Photos</h5>
+                    <p class="card-text text-muted">
+                        Take photos of your clothing items and upload them to create your digital wardrobe.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 text-success mb-3">🤖</div>
+                    <h5 class="card-title">Auto-Categorize</h5>
+                    <p class="card-text text-muted">
+                        Our AI automatically recognizes and categorizes your clothes - no manual tagging needed.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 text-info mb-3">👔</div>
+                    <h5 class="card-title">Get Recommendations</h5>
+                    <p class="card-text text-muted">
+                        Receive smart outfit suggestions based on what you already own.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 text-warning mb-3">📊</div>
+                    <h5 class="card-title">Track Usage</h5>
+                    <p class="card-text text-muted">
+                        See insights about your wardrobe and discover items you haven't worn in a while.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center py-5 bg-light rounded">
+        <h3>Ready to organize your wardrobe?</h3>
+        <p class="text-muted">Join now and start building your digital closet today.</p>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Create Free Account</a>
+    </div>
 </div>
 {% endblock %}

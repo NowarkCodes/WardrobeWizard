@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Welcome back, {{ user.username }}!</h2>
+            <p class="lead">Your wardrobe at a glance</p>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ total_items }}</h3>
+                    <p class="card-text">Total Items</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ saved_outfits_count }}</h3>
+                    <p class="card-text">Saved Outfits</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ category_counts|length }}</h3>
+                    <p class="card-text">Categories</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <a href="{% url 'upload' %}" class="btn btn-primary me-2">
+                        <i class="bi bi-upload"></i> Upload Items
+                    </a>
+                    <a href="{% url 'history' %}" class="btn btn-secondary me-2">
+                        <i class="bi bi-grid"></i> View Wardrobe
+                    </a>
+                    <a href="{% url 'save_outfit' %}" class="btn btn-success me-2">
+                        <i class="bi bi-plus-circle"></i> Create Outfit
+                    </a>
+                    <a href="{% url 'wardrobe_stats' %}" class="btn btn-info">
+                        <i class="bi bi-bar-chart"></i> View Stats
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Items -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Uploads</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_items %}
+                        <div class="row">
+                            {% for item in recent_items %}
+                                <div class="col-4 mb-2">
+                                    <a href="{% url 'image_result' item.id %}">
+                                        <img src="{{ item.image.url }}" class="img-fluid rounded" alt="{{ item.category }}" style="height: 80px; width: 100%; object-fit: cover;">
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No items yet. <a href="{% url 'upload' %}">Upload your first item!</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Category Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    {% if category_counts %}
+                        <ul class="list-group list-group-flush">
+                            {% for cat in category_counts %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ cat.category|default:"Uncategorized" }}
+                                    <span class="badge bg-primary rounded-pill">{{ cat.count }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No categories yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Outfit Recommendations Preview -->
+    {% if recommendations %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Outfit Suggestions</h5>
+                    <a href="{% url 'history' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for rec in recommendations %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <img src="{{ rec.0.image.url }}" class="img-fluid rounded" alt="{{ rec.0.category }}" style="height: 100px; width: 100%; object-fit: cover;">
+                                                <small class="d-block text-center mt-1">{{ rec.0.category }}</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <img src="{{ rec.1.image.url }}" class="img-fluid rounded" alt="{{ rec.1.category }}" style="height: 100px; width: 100%; object-fit: cover;">
+                                                <small class="d-block text-center mt-1">{{ rec.1.category }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Underutilized Items -->
+    {% if least_worn_items %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Items You Haven't Worn Yet</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for item in least_worn_items %}
+                            <div class="col-md-2 mb-2">
+                                <a href="{% url 'image_result' item.id %}">
+                                    <img src="{{ item.image.url }}" class="img-fluid rounded" alt="{{ item.category }}" style="height: 100px; width: 100%; object-fit: cover;">
+                                </a>
+                                <small class="d-block text-center">{{ item.category }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

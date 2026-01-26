@@ -2,41 +2,86 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Image Analysis Result</h2>
-    <div class="card">
-        <div class="card-body">
-            <img src="{{ image.image.url }}" class="img-fluid mb-3" alt="Uploaded Image">
-            <p><strong>Uploaded on:</strong> {{ image.uploaded_at }}</p>
-            <p><strong>Detected Labels:</strong> {{ image.labels }}</p>
-            <a href="{% url 'upload' %}" class="btn btn-primary">Upload Another Image</a>
-        </div>
-    </div>
-
-    <h3 class="mt-5">Advanced Outfit Recommendations</h3>
-    {% if recommendations %}
-        <div class="row">
-            {% for rec in recommendations %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Outfit Pair</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <img src="{{ rec.0.image.url }}" class="img-fluid mb-3" alt="Recommended Image 1">
-                                    <p><strong>Item 1:</strong> {{ rec.0.labels }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <img src="{{ rec.1.image.url }}" class="img-fluid mb-3" alt="Recommended Image 2">
-                                    <p><strong>Item 2:</strong> {{ rec.1.labels }}</p>
-                                </div>
+    <h2>Item Details</h2>
+    
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card">
+                <img src="{{ image.image.url }}" class="card-img-top" alt="{{ image.category }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ image.category|default:"Uncategorized" }}</h5>
+                    
+                    <div class="mb-3">
+                        <strong>Classification Confidence:</strong>
+                        <div class="progress mt-1">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ image.classification_confidence|floatformat:0 }}%;" 
+                                 aria-valuenow="{{ image.classification_confidence|floatformat:0 }}" 
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ image.classification_confidence|floatformat:0 }}%
                             </div>
                         </div>
                     </div>
+                    
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item"><strong>Uploaded:</strong> {{ image.uploaded_at|date:"F d, Y" }}</li>
+                        <li class="list-group-item"><strong>Worn:</strong> {{ image.wear_count }} time{{ image.wear_count|pluralize }}</li>
+                        {% if image.last_worn_date %}
+                            <li class="list-group-item"><strong>Last worn:</strong> {{ image.last_worn_date|date:"F d, Y" }}</li>
+                        {% endif %}
+                        {% if image.notes %}
+                            <li class="list-group-item"><strong>Notes:</strong> {{ image.notes }}</li>
+                        {% endif %}
+                    </ul>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'edit_item' image.id %}" class="btn btn-secondary">Edit Item</a>
+                        <form action="{% url 'mark_worn' image.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Mark as Worn</button>
+                        </form>
+                        <a href="{% url 'upload' %}" class="btn btn-primary">Upload Another</a>
+                    </div>
                 </div>
-            {% endfor %}
+            </div>
         </div>
-    {% else %}
-        <p>No recommendations found. Try uploading more images!</p>
-    {% endif %}
+        
+        <div class="col-md-7">
+            <h4>Outfit Recommendations</h4>
+            <p class="text-muted">Items that pair well with this piece</p>
+            
+            {% if recommendations %}
+                <div class="row">
+                    {% for rec in recommendations %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Outfit Pair</h6>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <img src="{{ rec.0.image.url }}" class="img-fluid rounded mb-2" alt="{{ rec.0.category }}" style="height: 100px; width: 100%; object-fit: cover;">
+                                            <small class="d-block text-center">{{ rec.0.category }}</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <img src="{{ rec.1.image.url }}" class="img-fluid rounded mb-2" alt="{{ rec.1.category }}" style="height: 100px; width: 100%; object-fit: cover;">
+                                            <small class="d-block text-center">{{ rec.1.category }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p class="mb-0">No recommendations yet. Upload more items to get outfit suggestions!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'history' %}" class="btn btn-outline-secondary">Back to Wardrobe</a>
+    </div>
 </div>
 {% endblock %}

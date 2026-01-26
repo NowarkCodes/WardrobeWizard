@@ -3,10 +3,42 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Menu</h2>
-    <div class="list-group">
-        <a href="{% url 'upload' %}" class="list-group-item list-group-item-action">Upload Images</a>
-        <a href="{% url 'history' %}" class="list-group-item list-group-item-action">View History</a>
-        <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">Profile</a>
+    <p class="lead">What would you like to do?</p>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="list-group">
+                <h5 class="mb-2">Wardrobe</h5>
+                <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    Dashboard
+                    <span class="badge bg-primary rounded-pill">→</span>
+                </a>
+                <a href="{% url 'upload' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    Upload Items
+                    <span class="badge bg-success rounded-pill">+</span>
+                </a>
+                <a href="{% url 'history' %}" class="list-group-item list-group-item-action">View Wardrobe</a>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <div class="list-group">
+                <h5 class="mb-2">Outfits</h5>
+                <a href="{% url 'save_outfit' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    Create Outfit
+                    <span class="badge bg-success rounded-pill">+</span>
+                </a>
+                <a href="{% url 'saved_outfits' %}" class="list-group-item list-group-item-action">Saved Outfits</a>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <div class="list-group">
+                <h5 class="mb-2">Profile & Stats</h5>
+                <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">Profile</a>
+                <a href="{% url 'wardrobe_stats' %}" class="list-group-item list-group-item-action">Wardrobe Statistics</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
