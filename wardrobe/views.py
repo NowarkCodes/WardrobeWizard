@@ -1,6 +1,5 @@
 import os
 from datetime import date
-from collections import Counter
 
 import numpy as np
 from django.contrib.auth.forms import UserCreationForm
@@ -18,6 +17,11 @@ from .models import ClothingItem, Outfit, WearLog
 # Load the pre-trained MobileNet model
 model_path = os.path.join(os.path.dirname(__file__), 'custom_fashion_model.h5')
 model = load_model(model_path)
+
+# Category constants for outfit matching
+TOPS = ['T-Shirt', 'Shirt', 'Polo', 'Top', 'Blouse', 'Hoodie', 'Longsleeve', 'Undershirt']
+BOTTOMS = ['Pants', 'Shorts', 'Skirt']
+OUTERWEAR = ['Outwear', 'Blazer']
 
 
 def home(request):
@@ -275,8 +279,8 @@ def save_outfit(request):
             outfit = Outfit.objects.create(
                 user=request.user,
                 name=name,
-                occasion=occasion if occasion else None,
-                season=season if season else None,
+                occasion=occasion or None,
+                season=season or None,
             )
             items = ClothingItem.objects.filter(id__in=item_ids, user=request.user)
             outfit.items.set(items)
@@ -339,25 +343,15 @@ def advanced_recommend_outfits(user_items, current_item=None):
             is_match = False
 
             # Tops pair with bottoms
-            tops = ['T-Shirt', 'Shirt', 'Polo', 'Top', 'Blouse', 'Hoodie', 'Longsleeve', 'Undershirt']
-            bottoms = ['Pants', 'Shorts', 'Skirt']
-
-            if category in tops and other_category in bottoms:
+            if category in TOPS and other_category in BOTTOMS:
                 is_match = True
-            elif category in bottoms and other_category in tops:
+            elif category in BOTTOMS and other_category in TOPS:
                 is_match = True
 
-            # Outerwear pairs with many things
-            outerwear = ['Outwear', 'Blazer']
-            if category in outerwear and other_category in (tops + ['Dress']):
+            # Outerwear pairs with tops and dresses
+            elif category in OUTERWEAR and other_category in (TOPS + ['Dress']):
                 is_match = True
-            elif other_category in outerwear and category in (tops + ['Dress']):
-                is_match = True
-
-            # Dress pairs with outerwear
-            if category == 'Dress' and other_category in outerwear:
-                is_match = True
-            elif other_category == 'Dress' and category in outerwear:
+            elif other_category in OUTERWEAR and category in (TOPS + ['Dress']):
                 is_match = True
 
             if is_match:
