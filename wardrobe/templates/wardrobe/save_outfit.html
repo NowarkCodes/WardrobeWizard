@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Create New Outfit</h2>
+    <p class="lead">Select items to combine into an outfit</p>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="name" class="form-label">Outfit Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="e.g., Casual Friday" required>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="occasion" class="form-label">Occasion (optional)</label>
+                <select class="form-select" id="occasion" name="occasion">
+                    <option value="">Select occasion...</option>
+                    {% for value, label in occasion_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="season" class="form-label">Season (optional)</label>
+                <select class="form-select" id="season" name="season">
+                    <option value="">Select season...</option>
+                    {% for value, label in season_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Select Items (click to select)</label>
+            <p class="text-muted small">Hold Ctrl/Cmd to select multiple items</p>
+            
+            {% if items %}
+                <div class="row" id="item-selection">
+                    {% for item in items %}
+                        <div class="col-md-2 col-4 mb-3">
+                            <div class="card h-100 item-card" data-item-id="{{ item.id }}">
+                                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.category }}" style="height: 100px; object-fit: cover;">
+                                <div class="card-body p-2">
+                                    <small class="d-block text-center">{{ item.category }}</small>
+                                    <input type="checkbox" name="items" value="{{ item.id }}" class="form-check-input item-checkbox" style="position: absolute; top: 5px; left: 5px;">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>No items in your wardrobe yet. <a href="{% url 'upload' %}">Upload some items first!</a></p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Save Outfit</button>
+            <a href="{% url 'saved_outfits' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .item-card {
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+    .item-card.selected {
+        border: 3px solid #0d6efd;
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    }
+    .item-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.item-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.type !== 'checkbox') {
+                const checkbox = this.querySelector('.item-checkbox');
+                checkbox.checked = !checkbox.checked;
+            }
+            this.classList.toggle('selected', this.querySelector('.item-checkbox').checked);
+        });
+    });
+</script>
+{% endblock %}

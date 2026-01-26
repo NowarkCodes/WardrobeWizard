@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Saved Outfits</h2>
+            <p class="lead">Your curated outfit combinations</p>
+        </div>
+        <a href="{% url 'save_outfit' %}" class="btn btn-primary">Create New Outfit</a>
+    </div>
+
+    {% if outfits %}
+        <div class="row">
+            {% for outfit in outfits %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">{{ outfit.name }}</h5>
+                            <form action="{% url 'delete_outfit' outfit.id %}" method="post" class="d-inline" onsubmit="return confirm('Delete this outfit?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">&times;</button>
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                {% for item in outfit.items.all %}
+                                    <div class="col-4">
+                                        <img src="{{ item.image.url }}" class="img-fluid rounded" alt="{{ item.category }}" style="height: 80px; width: 100%; object-fit: cover;">
+                                        <small class="d-block text-center text-muted">{{ item.category }}</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                {% if outfit.occasion %}
+                                    <span class="badge bg-primary">{{ outfit.get_occasion_display }}</span>
+                                {% endif %}
+                                {% if outfit.season %}
+                                    <span class="badge bg-success">{{ outfit.get_season_display }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <small class="text-muted">
+                                Created: {{ outfit.created_at|date:"M d, Y" }}<br>
+                                Worn: {{ outfit.wear_count }} time{{ outfit.wear_count|pluralize }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <h4 class="text-muted">No saved outfits yet</h4>
+                <p>Create your first outfit by combining items from your wardrobe.</p>
+                <a href="{% url 'save_outfit' %}" class="btn btn-primary">Create Outfit</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
